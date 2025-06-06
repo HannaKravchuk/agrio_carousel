@@ -1,16 +1,29 @@
+function debounce(func, timeout = 100) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
 export function initCarousel() {
   const carousel = document.querySelector('.carousel__track');
+  if (!carousel) return;
+
   carousel.setAttribute('tabindex', '-1');
   const leftArrow = document.querySelector('.carousel__arrow--left');
   const rightArrow = document.querySelector('.carousel__arrow--right');
   const items = document.querySelectorAll('.carousel__item');
   const gap = parseInt(getComputedStyle(carousel).gap) || 0;
 
-  items.forEach(item => {
-  item.classList.add('carousel__item--original');
-  const clone = item.cloneNode(true);
-  carousel.appendChild(clone);
-  });
+  const minItemsForInfiniteScroll = 3;
+  if (items.length >= minItemsForInfiniteScroll) {
+    items.forEach(item => {
+      item.classList.add('carousel__item--original');
+      const clone = item.cloneNode(true);
+      carousel.appendChild(clone);
+    });
+  }
 
   function getItemWidth() {
     if (items.length === 0) return 0;
@@ -18,28 +31,28 @@ export function initCarousel() {
   }
 
   function updateArrows() {
-  const carouselContainer = carousel.closest('.carousel__container');
-  const containerWidth = carouselContainer.offsetWidth;
-  let contentWidth = 0;
+    const carouselContainer = carousel.closest('.carousel__container');
+    const containerWidth = carouselContainer.offsetWidth;
+    let contentWidth = 0;
 
-  const originalItems = carousel.querySelectorAll('.carousel__item--original');
-  const itemCount = originalItems.length;
-  const minItemsToScroll = 3; 
+    const originalItems = carousel.querySelectorAll('.carousel__item--original');
+    const itemCount = originalItems.length;
+    const minItemsToScroll = 3;
 
-  originalItems.forEach(item => {
-    contentWidth += item.getBoundingClientRect().width + gap;
-  });
+    originalItems.forEach(item => {
+      contentWidth += item.getBoundingClientRect().width + gap;
+    });
 
-  if (itemCount < minItemsToScroll || contentWidth <= containerWidth) {
-    leftArrow.style.display = 'none';
-    rightArrow.style.display = 'none';
-    carouselContainer.classList.add('carousel--no-scroll');
-  } else {
-    leftArrow.style.display = 'block';
-    rightArrow.style.display = 'block';
-    carouselContainer.classList.remove('carousel--no-scroll');
+    if (itemCount < minItemsToScroll || contentWidth <= containerWidth) {
+      leftArrow.style.display = 'none';
+      rightArrow.style.display = 'none';
+      carouselContainer.classList.add('carousel--no-scroll');
+    } else {
+      leftArrow.style.display = 'block';
+      rightArrow.style.display = 'block';
+      carouselContainer.classList.remove('carousel--no-scroll');
+    }
   }
-}
 
   leftArrow.addEventListener('click', () => {
     const itemWidth = getItemWidth();
@@ -115,27 +128,27 @@ export function initCarousel() {
   });
 
   document.addEventListener('keydown', (event) => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    event.preventDefault();
-    const itemWidth = getItemWidth();
-    if (event.key === 'ArrowLeft') {
-      carousel.scrollBy({ left: -itemWidth, behavior: 'smooth' });
-      setTimeout(checkScrollPosition, 300);
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const itemWidth = getItemWidth();
+      if (event.key === 'ArrowLeft') {
+        carousel.scrollBy({ left: -itemWidth, behavior: 'smooth' });
+        setTimeout(checkScrollPosition, 300);
+      }
+      if (event.key === 'ArrowRight') {
+        carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
+        setTimeout(checkScrollPosition, 300);
+      }
     }
-    if (event.key === 'ArrowRight') {
-      carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
-      setTimeout(checkScrollPosition, 300);
-    }
-  }
-});
+  });
 
   carousel.addEventListener('scroll', () => {
     updateArrows();
   });
 
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', debounce(() => {
     updateArrows();
-  });
+  }));
 
   updateArrows();
 }

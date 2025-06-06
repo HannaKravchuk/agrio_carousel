@@ -52,6 +52,11 @@
   &__container {
     position: relative;
     overflow: hidden;
+    
+    &:hover .carousel__arrow {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 
   &__track {
@@ -63,6 +68,14 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; 
     -ms-overflow-style: none;
+    
+    &:hover {
+      cursor: grab;
+      
+      &:active {
+        cursor: grabbing;
+      }
+    }
   }
 
   &__track::-webkit-scrollbar {
@@ -70,6 +83,7 @@
   }
 
   &__item {
+    scroll-snap-align: start;
     flex: 0 0 auto;
     width: 100%;
     min-height: 320px;
@@ -168,11 +182,11 @@
       z-index: 1;
 
       @include media-breakpoint-up(sm) {
-      font-size: 0.65rem;
+        font-size: 0.65rem;
       }
 
       @include media-breakpoint-up(md) {
-      font-size: 0.7rem;
+        font-size: 0.7rem;
       }
     }
 
@@ -183,11 +197,11 @@
       margin-bottom: 0.5rem;
 
       @include media-breakpoint-up(sm) {
-      font-size: 0.8rem;
-    }
+        font-size: 0.8rem;
+      }
 
       @include media-breakpoint-up(md) {
-      font-size: 0.875rem;
+        font-size: 0.875rem;
       }
     }
 
@@ -197,15 +211,15 @@
       margin: 0;
 
       @include media-breakpoint-up(sm) {
-      font-size: 1.14rem;
+        font-size: 1.14rem;
       }
 
       @include media-breakpoint-up(md) {
-      font-size: 1.16rem;
+        font-size: 1.16rem;
       }
 
       @include media-breakpoint-up(lg) {
-      font-size: 1.18rem;
+        font-size: 1.18rem;
       }
     }
   }
@@ -221,9 +235,21 @@
     cursor: pointer;
     padding: 0.25rem 0.85rem;
     border-radius: 50%;
-    display: none;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: darken($text-color, 30%);
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    &:focus {
+      outline: 2px solid $highlight-color;
+    }
 
     &--left {
       left: 0.5rem;
@@ -232,21 +258,15 @@
     &--right {
       right: 0.5rem;
     }
-
-    &:hover {
-      background: darken($text-color, 30%);
-    }
-
-    &:focus {
-      outline: 2px solid $highlight-color;
-    }
-  }
-
-  &__container:hover &__arrow {
-    display: block;
   }
 
   &__container.carousel--no-scroll .carousel__arrow {
+    display: none !important;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .carousel__arrow {
     display: none !important;
   }
 }
