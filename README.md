@@ -1,4 +1,4 @@
-# Testopdracht: "Net Binnen" Carrousel - AgriTech Thema
+# Testopdracht: "Net Binnen" Carrousel
 
 **Live demo:** [https://hannakravchuk.github.io/agrio_carousel/] | **Bekijk de code:** [https://github.com/HannaKravchuk/agrio_carousel.git)
 
