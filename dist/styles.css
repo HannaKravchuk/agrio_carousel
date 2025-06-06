@@ -11917,7 +11917,7 @@ a {
   transition: color 0.4s ease;
 }
 .carousel__view-all:hover {
-  color: rgb(248.4945652174, 231.1467391304, 128.5054347826);
+  color: rgb(253.4836956522, 249.4402173913, 225.5163043478);
 }
 .carousel__container {
   position: relative;
@@ -12099,7 +12099,7 @@ a {
   right: 0.5rem;
 }
 .carousel__arrow:hover {
-  background: rgb(229.5, 229.5, 229.5);
+  background: rgb(178.5, 178.5, 178.5);
 }
 .carousel__arrow:focus {
   outline: 2px solid #f6de50;
