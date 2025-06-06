@@ -14,8 +14,8 @@
 ### Kernstack
 | Categorie       | Implementatie                                                                 |
 |-----------------|------------------------------------------------------------------------------|
-| **Structuur**   | Semantische HTML5 (`<section>`, `<article>`-achtige items)                  |
-| **Styling**     | SCSS + Bootstrap 5 (custom breakpoints via `_variables.scss`)               |
+| **Structuur**   | Semantische HTML5                
+| **Styling**     | SCSS + Bootstrap 5              
 | **Interactie**  | Pure JavaScript (ES6 Modules)                                               |                               |
 
 ## Projectstructuur
