@@ -16,19 +16,8 @@
 |-----------------|------------------------------------------------------------------------------|
 | **Structuur**   | Semantische HTML5 (`<section>`, `<article>`-achtige items)                  |
 | **Styling**     | SCSS + Bootstrap 5 (custom breakpoints via `_variables.scss`)               |
-| **Interactie**  | Pure JavaScript (ES6 Modules)                                               |
-| **Bundling**    | npm + Vite (voor optimale asset handling)                                   |
+| **Interactie**  | Pure JavaScript (ES6 Modules)                                               |                               |
 
-### Carrousel Highights
-```scss
-// _carousel.scss - Responsive breakpoints
-@include media-breakpoint-up(md) {
-  .carousel__item { width: calc(100% / 1.5); } // 2 items zichtbaar
-}
-@include media-breakpoint-up(lg) {
-  .carousel__item { width: calc(100% / 2.5); } // 3 items zichtbaar
-}
-```
 ## Projectstructuur
 
 /src
@@ -39,14 +28,6 @@
 ├── carousel.js           # Interactielogica (swipe, pijlen, keyboard)
 └── main.js               # Initialisatie
 
-## 🚀 Gebruiksaanwijzing
-
-```bash
-git clone https://github.com/jouw-gebruikersnaam/repo.git
-cd repo
-npm install
-npm run dev \ npm run build
-```
 
 ## Visuele Afwerking
 
