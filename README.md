@@ -28,6 +28,21 @@
 ├── carousel.js           # Interactielogica (swipe, pijlen, keyboard)
 └── main.js               # Initialisatie
 
+## 🔧 Installatie
+
+Om CORS-fouten te vermijden, open het project via een lokale server:
+
+Gebruik Live Server in VS Code: rechtsklik op index.html > "Open with Live Server".
+Of gebruik Node.js:
+```bash
+npx http-server .
+```
+Of gebruik Python:
+```bash
+python -m http.server
+```
+Zo werkt alles correct en worden alle resources geladen.
+
 
 ## Visuele Afwerking
 
