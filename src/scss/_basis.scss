@@ -1,0 +1,18 @@
+@use 'variables' as *;
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    
+    color: $text-color;
+}
+
+a {
+    text-decoration: none;
+}
+
+.container-fluid {
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: $primary-bg;
+}

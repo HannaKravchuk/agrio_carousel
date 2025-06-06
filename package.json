@@ -1,0 +1,22 @@
+{
+  "name": "agrio-carousel",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "sass --watch src/scss/styles.scss:dist/styles.css",
+    "copy-js": "cp src/js/*.js dist/js",
+    "build": "npm run sass & npm run copy-js",
+    "start": "npm run build && live-server dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "sass": "^1.89.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.6"
+  }
+}
