@@ -12086,7 +12086,7 @@ a {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.85rem;
   border-radius: 50%;
   display: none;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);

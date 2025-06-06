@@ -18,7 +18,8 @@ export function initCarousel() {
   }
 
   function updateArrows() {
-  const containerWidth = carousel.offsetWidth;
+  const carouselContainer = carousel.closest('.carousel__container');
+  const containerWidth = carouselContainer.offsetWidth;
   let contentWidth = 0;
 
   const originalItems = carousel.querySelectorAll('.carousel__item--original');
@@ -28,8 +29,6 @@ export function initCarousel() {
   originalItems.forEach(item => {
     contentWidth += item.getBoundingClientRect().width + gap;
   });
-
-  const carouselContainer = carousel.closest('.carousel__container');
 
   if (itemCount < minItemsToScroll || contentWidth <= containerWidth) {
     leftArrow.style.display = 'none';
