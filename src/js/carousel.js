@@ -1,154 +1,154 @@
-function debounce(func, timeout = 100) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => { func.apply(this, args); }, timeout);
-  };
+const CONFIG = {
+  DEBOUNCE_TIMEOUT: 100,
+  SCROLL_CHECK_DELAY: 300,
+  SWIPE_SENSITIVITY: 2
+};
+
+const SELECTORS = {
+  CAROUSEL: '.carousel__track',
+  LEFT_ARROW: '.carousel__arrow--left',
+  RIGHT_ARROW: '.carousel__arrow--right',
+  ITEM: '.carousel__item',
+  CONTAINER: '.carousel__container',
+  NO_SCROLL: 'carousel--no-scroll'
+};
+
+const state = {
+  isDragging: false,
+  startX: 0,
+  scrollStart: 0,
+  timer: null,
+  elements: {
+    carousel: null,
+    leftArrow: null,
+    rightArrow: null,
+    container: null,
+    viewAllButton: null
+  }
+};
+
+function initializeElements() {
+  state.elements.carousel = document.querySelector(SELECTORS.CAROUSEL);
+  if (!state.elements.carousel) return false;
+
+  state.elements.carousel.setAttribute('tabindex', '-1');
+  state.elements.leftArrow = document.querySelector(SELECTORS.LEFT_ARROW);
+  state.elements.rightArrow = document.querySelector(SELECTORS.RIGHT_ARROW);
+  state.elements.container = state.elements.carousel.closest(SELECTORS.CONTAINER);
+  state.elements.viewAllButton = document.querySelector('.carousel__view-all');
+
+  return true;
+}
+
+function getItemWidth() {
+  const item = state.elements.carousel.querySelector(SELECTORS.ITEM);
+  if (!item) return 0;
+  const gap = parseInt(getComputedStyle(state.elements.carousel).gap) || 0;
+  return item.getBoundingClientRect().width + gap;
+}
+
+function scrollCarousel(direction) {
+  const itemWidth = getItemWidth();
+  const scrollAmount = direction === 'prev' ? -itemWidth : itemWidth;
+
+  state.elements.carousel.scrollBy({
+    left: scrollAmount,
+    behavior: 'smooth'
+  });
+}
+
+function handleDragStart(e) {
+  state.isDragging = true;
+  state.startX = e.pageX || e.touches[0].pageX;
+  state.scrollStart = state.elements.carousel.scrollLeft;
+}
+
+function handleDragMove(e) {
+  if (!state.isDragging) return;
+
+  const x = e.pageX || e.touches[0].pageX;
+  const walk = (x - state.startX) * CONFIG.SWIPE_SENSITIVITY;
+  state.elements.carousel.scrollLeft = state.scrollStart - walk;
+}
+
+function handleDragEnd() {
+  state.isDragging = false;
+}
+
+function handleKeyDown(e) {
+  if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+    scrollCarousel(e.key === 'ArrowLeft' ? 'prev' : 'next');
+  }
+}
+
+function updateArrowsVisibility() {
+  const { carousel, container, leftArrow, rightArrow } = state.elements;
+  const containerWidth = container.offsetWidth;
+  const contentWidth = carousel.scrollWidth;
+
+  const shouldHideArrows = contentWidth <= containerWidth;
+
+  leftArrow.style.display = shouldHideArrows ? 'none' : 'block';
+  rightArrow.style.display = shouldHideArrows ? 'none' : 'block';
+  container.classList.toggle(SELECTORS.NO_SCROLL, shouldHideArrows);
+}
+
+function setupEventListeners() {
+  const { carousel, leftArrow, rightArrow } = state.elements;
+
+  leftArrow.addEventListener('click', () => scrollCarousel('prev'));
+  rightArrow.addEventListener('click', () => scrollCarousel('next'));
+
+  carousel.addEventListener('mousedown', handleDragStart);
+  carousel.addEventListener('mousemove', handleDragMove);
+  carousel.addEventListener('mouseup', handleDragEnd);
+  carousel.addEventListener('mouseleave', () => state.isDragging = false);
+
+  carousel.addEventListener('touchstart', handleDragStart);
+  carousel.addEventListener('touchmove', handleDragMove);
+  carousel.addEventListener('touchend', handleDragEnd);
+
+  document.addEventListener('keydown', handleKeyDown);
+
+  carousel.addEventListener('scroll', debounce(updateArrowsVisibility));
+  window.addEventListener('resize', debounce(updateArrowsVisibility));
+}
+
+function handleViewAllClick(e) {
+  e.preventDefault();
+
+  const container = state.elements.container;
+  const viewAllButton = state.elements.viewAllButton;
+
+  if (container.classList.contains('carousel__container--expanded')) {
+    container.classList.remove('carousel__container--expanded');
+    updateArrowsVisibility();
+    viewAllButton.textContent = 'Bekijk alles >';
+  } else {
+    container.classList.add('carousel__container--expanded');
+    viewAllButton.textContent = '< Verberg';
+  }
+}
+
+function setupViewAllButton() {
+  const viewAllButton = state.elements.viewAllButton;
+  if (viewAllButton) {
+    viewAllButton.addEventListener('click', handleViewAllClick);
+  }
 }
 
 export function initCarousel() {
-  const carousel = document.querySelector('.carousel__track');
-  if (!carousel) return;
+  if (!initializeElements()) return;
 
-  carousel.setAttribute('tabindex', '-1');
-  const leftArrow = document.querySelector('.carousel__arrow--left');
-  const rightArrow = document.querySelector('.carousel__arrow--right');
-  const items = document.querySelectorAll('.carousel__item');
-  const gap = parseInt(getComputedStyle(carousel).gap) || 0;
+  setupEventListeners();
+  updateArrowsVisibility();
+  setupViewAllButton();
+}
 
-  const minItemsForInfiniteScroll = 3;
-  if (items.length >= minItemsForInfiniteScroll) {
-    items.forEach(item => {
-      item.classList.add('carousel__item--original');
-      const clone = item.cloneNode(true);
-      carousel.appendChild(clone);
-    });
-  }
-
-  function getItemWidth() {
-    if (items.length === 0) return 0;
-    return items[0].getBoundingClientRect().width + gap;
-  }
-
-  function updateArrows() {
-    const carouselContainer = carousel.closest('.carousel__container');
-    const containerWidth = carouselContainer.offsetWidth;
-    let contentWidth = 0;
-
-    const originalItems = carousel.querySelectorAll('.carousel__item--original');
-    const itemCount = originalItems.length;
-    const minItemsToScroll = 3;
-
-    originalItems.forEach(item => {
-      contentWidth += item.getBoundingClientRect().width + gap;
-    });
-
-    if (itemCount < minItemsToScroll || contentWidth <= containerWidth) {
-      leftArrow.style.display = 'none';
-      rightArrow.style.display = 'none';
-      carouselContainer.classList.add('carousel--no-scroll');
-    } else {
-      leftArrow.style.display = 'block';
-      rightArrow.style.display = 'block';
-      carouselContainer.classList.remove('carousel--no-scroll');
-    }
-  }
-
-  leftArrow.addEventListener('click', () => {
-    const itemWidth = getItemWidth();
-    carousel.scrollBy({ left: -itemWidth, behavior: 'smooth' });
-    setTimeout(checkScrollPosition, 300);
-  });
-
-  rightArrow.addEventListener('click', () => {
-    const itemWidth = getItemWidth();
-    carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
-    setTimeout(checkScrollPosition, 300);
-  });
-
-  function checkScrollPosition() {
-    const scrollWidth = carousel.scrollWidth;
-    const halfWidth = scrollWidth / 2;
-    const threshold = 5;
-
-    if (carousel.scrollLeft >= halfWidth - threshold) {
-      carousel.style.scrollBehavior = 'auto';
-      carousel.scrollLeft = carousel.scrollLeft - halfWidth;
-      carousel.style.scrollBehavior = 'smooth';
-    } else if (carousel.scrollLeft <= threshold) {
-      carousel.style.scrollBehavior = 'auto';
-      carousel.scrollLeft = carousel.scrollLeft + halfWidth;
-      carousel.style.scrollBehavior = 'smooth';
-    }
-  }
-
-  let isDown = false;
-  let startX;
-  let scrollLeftStart;
-
-  carousel.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - carousel.offsetLeft;
-    scrollLeftStart = carousel.scrollLeft;
-  });
-
-  carousel.addEventListener('mouseleave', () => {
-    isDown = false;
-  });
-
-  carousel.addEventListener('mouseup', () => {
-    isDown = false;
-    checkScrollPosition();
-  });
-
-  carousel.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 2;
-    carousel.scrollLeft = scrollLeftStart - walk;
-  });
-
-  carousel.addEventListener('touchstart', (e) => {
-    isDown = true;
-    startX = e.touches[0].pageX - carousel.offsetLeft;
-    scrollLeftStart = carousel.scrollLeft;
-  });
-
-  carousel.addEventListener('touchend', () => {
-    isDown = false;
-    checkScrollPosition();
-  });
-
-  carousel.addEventListener('touchmove', (e) => {
-    if (!isDown) return;
-    const x = e.touches[0].pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 2;
-    carousel.scrollLeft = scrollLeftStart - walk;
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      const itemWidth = getItemWidth();
-      if (event.key === 'ArrowLeft') {
-        carousel.scrollBy({ left: -itemWidth, behavior: 'smooth' });
-        setTimeout(checkScrollPosition, 300);
-      }
-      if (event.key === 'ArrowRight') {
-        carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
-        setTimeout(checkScrollPosition, 300);
-      }
-    }
-  });
-
-  carousel.addEventListener('scroll', () => {
-    updateArrows();
-  });
-
-  window.addEventListener('resize', debounce(() => {
-    updateArrows();
-  }));
-
-  updateArrows();
+function debounce(func, timeout = CONFIG.DEBOUNCE_TIMEOUT) {
+  return (...args) => {
+    clearTimeout(state.timer);
+    state.timer = setTimeout(() => func.apply(this, args), timeout);
+  };
 }
